@@ -2,8 +2,8 @@
 // Database credentials
 $servername = "localhost";
 $username = "root";
-$password = "Cooll121";
-$dbname = "ticket";
+$password = "";
+$dbname = "billet";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);

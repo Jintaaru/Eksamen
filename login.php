@@ -15,10 +15,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset ($_POST['login'])) {
         // Sjekker om passordet er korrekt
         if (password_verify($password, $user['password'])) {
             if ($user['role'] == 'Admin') {
-                header("Location: admin_dashboard.html");
+                header("Location: answer_ticket.php");
                 exit();
             } else {
-                header("Location: user_dashboard.html");
+                header("Location: submit_ticket.php");
                 exit();
             }
         } else {
@@ -40,16 +40,19 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Logg inn</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <div class="container">
-        <form action="login.php" method="post">
+    <div class="login-container">
+        <div><form action="login.php" method="post">
             <h2>Logg inn</h2>
             <input type="text" name="username" placeholder="Brukernavn" required>
             <input type="password" name="password" placeholder="Passord" required>
             <input type="submit" name="login" value="Logg inn">
+            <p><a href="register.php">Registrer her</a></p>
         </form>
+    </div>        
     </div>
 </body>
 

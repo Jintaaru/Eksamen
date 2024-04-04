@@ -3,7 +3,8 @@
 include 'db_connection.php';
 
 // Function to fetch all tickets
-function fetchTickets($conn) {
+function fetchTickets($conn)
+{
     $query = "SELECT * FROM tickets";
     $result = $conn->query($query);
     if ($result->num_rows > 0) {
@@ -22,7 +23,7 @@ function fetchTickets($conn) {
 }
 
 // Handle status change actions
-if (isset($_GET['action']) && isset($_GET['id'])) {
+if (isset ($_GET['action']) && isset ($_GET['id'])) {
     $action = $_GET['action'];
     $ticketId = $_GET['id'];
 
@@ -44,6 +45,7 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
 
 <!DOCTYPE html>
 <html lang="no">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -59,7 +61,7 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.4);
+            background-color: rgba(0, 0, 0, 0.4);
         }
 
         .modal-content {
@@ -85,16 +87,21 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h2>Answer Tickets</h2>
-        
+
         <!-- View Tickets Section -->
         <h3>Tickets</h3>
         <ul>
             <?php fetchTickets($conn); ?>
         </ul>
     </div>
+
+    <form action="logout.php" method="post">
+        <button type="submit">Logout</button>
+    </form>
 
     <!-- Modal for Answering Ticket -->
     <div id="answerModal" class="modal">
@@ -119,17 +126,18 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
             modal.style.display = "block";
         }
 
-        // Close the modal when clicking on the close button
+        // Close the modal when clicking on the EXIT BUTTTONNNNNN
         function closeModal() {
             modal.style.display = "none";
         }
 
-        // Close the modal when clicking anywhere outside of it
-        window.onclick = function(event) {
+        // Close the modal when clicking outside
+        window.onclick = function (event) {
             if (event.target == modal) {
                 modal.style.display = "none";
             }
         }
     </script>
 </body>
+
 </html>

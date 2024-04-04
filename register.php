@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['register'])) {
         $insert_query = "INSERT INTO users (username, password, email, role) VALUES ('$username', '$hashed_password', '$email', 'User')";
         
         if ($conn->query($insert_query) === TRUE) {
-            header("Location: login.html");
+            header("Location: submit_ticket.php");
             exit();
         } else {
             echo "Feil under registrering: " . $conn->error;
@@ -37,15 +37,17 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrering</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
+    <div class="login-container">
         <form action="register.php" method="post">
             <h2>Registrering</h2>
             <input type="text" name="username" placeholder="Brukernavn" required>
             <input type="password" name="password" placeholder="Passord" required>
             <input type="email" name="email" placeholder="E-post" required>
             <input type="submit" name="register" value="Registrer">
+            <p><a href="login.php">Login inn her</a></p>
         </form>
     </div>
 </body>

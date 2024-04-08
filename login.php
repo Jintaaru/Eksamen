@@ -1,37 +1,5 @@
-<?php
-// Kobler til databasen
-include 'db_connection.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset ($_POST['login'])) {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
 
-    // Henter brukeren fra databasen basert på brukernavnet
-    $query = "SELECT * FROM users WHERE username='$username'";
-    $result = $conn->query($query);
-
-    if ($result->num_rows == 1) {
-        $user = $result->fetch_assoc();
-        // Sjekker om passordet er korrekt
-        if (password_verify($password, $user['password'])) {
-            if ($user['role'] == 'Admin') {
-                header("Location: answer_ticket.php");
-                exit();
-            } else {
-                header("Location: submit_ticket.php");
-                exit();
-            }
-        } else {
-            echo "Feil passord.";
-        }
-    } else {
-        echo "Brukeren eksisterer ikke.";
-    }
-}
-
-// Lukker databasetilkoblingen
-$conn->close();
-?>
 
 <!DOCTYPE html>
 <html lang="no">
@@ -54,6 +22,43 @@ $conn->close();
         </form>
     </div>        
     </div>
+    <?php
+session_start(); 
+// Kobler til databasen
+include 'db_connection.php';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset ($_POST['login'])) {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    // Henter brukeren fra databasen basert på brukernavnet
+    $query = "SELECT * FROM users WHERE username='$username'";
+    $result = $conn->query($query);
+
+    if ($result->num_rows == 1) {
+        $user = $result->fetch_assoc();
+        // Sjekker om passordet er korrekt
+        if (password_verify($password, $user['password'])) {
+            // Set user ID in session
+            $_SESSION['user_id'] = $user['user_id'];
+            if ($user['role'] == 'Admin') {
+                header("Location: answer_ticket.php");
+                exit();
+            } else {
+                header("Location: submit_ticket.php");
+                exit();
+            }
+        } else {
+            echo "Feil passord.";
+        }
+    } else {
+        echo "Brukeren eksisterer ikke.";
+    }
+}
+
+// Lukker databasetilkoblingen
+$conn->close();
+?>
 </body>
 
 </html>

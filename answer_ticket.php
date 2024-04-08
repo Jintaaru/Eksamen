@@ -1,6 +1,27 @@
 <?php
+session_start();
+
 // Include database connection
 include 'db_connection.php';
+
+// Handle status change actions
+if (isset($_GET['action']) && isset($_GET['id'])) {
+    $action = $_GET['action'];
+    $ticketId = $_GET['id'];
+
+    // Determine the status to update based on the action
+    $newStatus = ($action === 'close') ? 'Closed' : 'Open';
+
+    // Update ticket status in the database
+    $updateQuery = "UPDATE tickets SET status='$newStatus' WHERE ticket_id='$ticketId'";
+    if ($conn->query($updateQuery) === TRUE) {
+        // Redirect to refresh the page after status change
+        header("Location: answer_ticket.php");
+        exit();
+    } else {
+        echo "Error updating ticket status: " . $conn->error;
+    }
+}
 
 // Function to fetch all tickets
 function fetchTickets($conn)
@@ -9,8 +30,8 @@ function fetchTickets($conn)
     $result = $conn->query($query);
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
+            // Display ticket information with links to close or open the case
             echo "<li><strong>{$row['subject']}</strong> - {$row['message']} - Status: {$row['status']} ";
-            echo "<a href='#' onclick='openModal({$row['ticket_id']})'>Answer</a> ";
             if ($row['status'] == 'Open') {
                 echo "<a href='answer_ticket.php?action=close&id={$row['ticket_id']}'>Close</a></li>";
             } else {
@@ -22,25 +43,6 @@ function fetchTickets($conn)
     }
 }
 
-// Handle status change actions
-if (isset ($_GET['action']) && isset ($_GET['id'])) {
-    $action = $_GET['action'];
-    $ticketId = $_GET['id'];
-
-    if ($action === 'close') {
-        $updateQuery = "UPDATE tickets SET status='Closed' WHERE ticket_id='$ticketId'";
-    } elseif ($action === 'open') {
-        $updateQuery = "UPDATE tickets SET status='Open' WHERE ticket_id='$ticketId'";
-    }
-
-    if ($conn->query($updateQuery) === TRUE) {
-        // Redirect to refresh the page after status change
-        header("Location: answer_ticket.php");
-        exit();
-    } else {
-        echo "Error updating ticket status: " . $conn->error;
-    }
-}
 ?>
 
 <!DOCTYPE html>
@@ -51,39 +53,68 @@ if (isset ($_GET['action']) && isset ($_GET['id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Answer Ticket</title>
     <style>
-        /* Your CSS styles here */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
+        /* Reset default browser styles */
+        body,
+        ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
         }
 
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0D1321;
+            color: #FFFFFF;
             padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
         }
 
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #1A1D29;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
 
-        .close:hover,
-        .close:focus {
-            color: black;
+        h2,
+        h3 {
+            color: #FFFFFF;
+            text-align: center;
+        }
+
+        ul {
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        a {
+            color: #FFFFFF;
             text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        a:hover {
+            background-color: #3A3E4C;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
@@ -103,41 +134,7 @@ if (isset ($_GET['action']) && isset ($_GET['id'])) {
         <button type="submit">Logout</button>
     </form>
 
-    <!-- Modal for Answering Ticket -->
-    <div id="answerModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2>Answer Ticket</h2>
-            <form id="answerForm" action="answer_ticket.php" method="post">
-                <input type="hidden" id="ticketId" name="ticket_id">
-                <textarea id="response" name="response" rows="4" placeholder="Enter your answer" required></textarea>
-                <input type="submit" name="answer_ticket" value="Submit">
-            </form>
-        </div>
-    </div>
-
-    <script>
-        // Get the modal
-        var modal = document.getElementById("answerModal");
-
-        // Open the modal when clicking on the "Answer" link
-        function openModal(ticketId) {
-            document.getElementById('ticketId').value = ticketId;
-            modal.style.display = "block";
-        }
-
-        // Close the modal when clicking on the EXIT BUTTTONNNNNN
-        function closeModal() {
-            modal.style.display = "none";
-        }
-
-        // Close the modal when clicking outside
-        window.onclick = function (event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-    </script>
 </body>
 
 </html>
+
